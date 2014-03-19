@@ -20,6 +20,15 @@ parser.add_option('-s', '--cell_size',
 parser.add_option('-r', '--rule_number', 
 					dest='rule_number', default=224,
 					help='The Wolfram rule number.')
+parser.add_option('-t', '--starting_position',
+					dest='starting_position', default='230c',
+					help='Choose between the 3 starting positions on pgs 229 and 230. (229a, 229b, or 230c)')
+parser.add_option('-e', '--total_gens',
+					dest='total_gens', default=100,
+					help='Choose how many generations to run the automaton for.')
+parser.add_option('-p', '--pause',
+					dest='pause', default=10000,
+					help='Choose how long pygame stays open for after completion of total_gens.')
 (options, args) = parser.parse_args()
 
 #setting variables from options
@@ -28,6 +37,9 @@ width = int(options.width)
 height = int(options.height)
 cell_size = int(options.cell_size)
 rule_number = int(options.rule_number)
+initial = str(options.starting_position)
+total_gens = int(options.total_gens)
+pause = int(options.pause)
 
 #other fixed variables
 cwidth = width/cell_size
@@ -53,64 +65,64 @@ def blankGrid():
 	return grid
 
 #sets each cell to alive (1) or dead (0)
-def randomStates(cell_states):
+def setStates(cell_states):
 	#randomly sets states
 	"""for i in cell_states:
 		cell_states[i] = random.randint(0,1)"""
 		
-	#manually sets states
-	#pg229a
-	"""cell_states[28,28] = 1
-	cell_states[28,29] = 1
-	cell_states[28,30] = 1
-	cell_states[28,32] = 1
-	cell_states[29,28] = 1
-	cell_states[29,29] = 1
-	cell_states[29,30] = 1
-	cell_states[29,31] = 1
-	cell_states[29,32] = 1
-	cell_states[30,28] = 1
-	cell_states[30,29] = 1
-	cell_states[30,32] = 1
-	cell_states[31,32] = 1
-	cell_states[32,28] = 1
-	cell_states[32,29] = 1
-	cell_states[32,30] = 1"""
+	#sets starting states
+	if initial == '229a':
+		cell_states[28,28] = 1
+		cell_states[28,29] = 1
+		cell_states[28,30] = 1
+		cell_states[28,32] = 1
+		cell_states[29,28] = 1
+		cell_states[29,29] = 1
+		cell_states[29,30] = 1
+		cell_states[29,31] = 1
+		cell_states[29,32] = 1
+		cell_states[30,28] = 1
+		cell_states[30,29] = 1
+		cell_states[30,32] = 1
+		cell_states[31,32] = 1
+		cell_states[32,28] = 1
+		cell_states[32,29] = 1
+		cell_states[32,30] = 1
 	
-	#pg229b
-	"""cell_states[30,30] = 0
-	cell_states[30,28] = 1
-	cell_states[30,31] = 1
-	cell_states[31,29] = 1
-	cell_states[32,29] = 1
-	cell_states[32,31] = 1
-	cell_states[32,32] = 1
-	cell_states[29,29] = 1
-	cell_states[29,31] = 1
-	cell_states[29,32] = 1
-	cell_states[28,31] = 1
-	cell_states[28,32] = 1"""
+	if initial == '229b':
+		cell_states[30,30] = 0
+		cell_states[30,28] = 1
+		cell_states[30,31] = 1
+		cell_states[31,29] = 1
+		cell_states[32,29] = 1
+		cell_states[32,31] = 1
+		cell_states[32,32] = 1
+		cell_states[29,29] = 1
+		cell_states[29,31] = 1
+		cell_states[29,32] = 1
+		cell_states[28,29] = 1
+		cell_states[28,31] = 1
+		cell_states[28,32] = 1
 	
-	#pg230c
-	cell_states[28,28] = 1
-	cell_states[28,30] = 1
-	cell_states[28,31] = 1
-	cell_states[28,32] = 1
-	cell_states[29,28] = 1
-	cell_states[29,29] = 1
-	cell_states[29,30] = 1
-	cell_states[29,31] = 1
-	cell_states[29,32] = 1
-	cell_states[30,29] = 1
-	cell_states[30,31] = 1
-	cell_states[30,32] = 1
-	cell_states[31,29] = 1
-	cell_states[31,30] = 1
-	cell_states[31,31] = 1
-	cell_states[31,32] = 1
-	cell_states[32,28] = 1
-	cell_states[32,31] = 1
-	cell_states[32,32] = 1
+	if initial == '230c':
+		cell_states[28,28] = 1
+		cell_states[28,30] = 1
+		cell_states[28,31] = 1
+		cell_states[28,32] = 1
+		cell_states[29,28] = 1
+		cell_states[29,29] = 1
+		cell_states[29,30] = 1
+		cell_states[29,31] = 1
+		cell_states[29,32] = 1
+		cell_states[30,29] = 1
+		cell_states[30,31] = 1
+		cell_states[30,32] = 1
+		cell_states[31,29] = 1
+		cell_states[31,30] = 1
+		cell_states[31,31] = 1
+		cell_states[32,28] = 1
+		cell_states[32,31] = 1
+		cell_states[32,32] = 1
 	return cell_states
 
 #colors the living cells black and the dead cells white	
@@ -174,7 +186,7 @@ def main():
 	panel.fill(white)
 	
 	cell_states = blankGrid()
-	cell_states = randomStates(cell_states)
+	cell_states = setStates(cell_states)
 	
 	
 	for i in cell_states:
@@ -183,7 +195,7 @@ def main():
 	drawGrid()
 	pygame.display.update()
 	
-	
+	gens = 0
 	while True:
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -196,7 +208,15 @@ def main():
 		
 		drawGrid()
 		pygame.display.update()
-		fpsclock.tick(fps)
+		fpsclock.tick_busy_loop(fps)
+		gens += 1
+		
+		#stops creating generations after a set number
+		if gens == total_gens:
+			break
 	
+	#keeps pygame open for viewing
+	pygame.time.wait(pause)
+
 if __name__ == '__main__':
 	main()
