@@ -18,7 +18,7 @@ parser.add_option('-s', '--cell_size',
 					dest='cell_size', default=10,
 					help='The size of each individual cell.')
 parser.add_option('-r', '--rule_number', 
-					dest='rule_number', default=224,
+					dest='rule_number', default=291552,
 					help='The Wolfram rule number.')
 parser.add_option('-t', '--starting_position',
 					dest='starting_position', default='230c',
